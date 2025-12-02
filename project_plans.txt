@@ -1,0 +1,107 @@
+Main project:
+    Make a fully functional(run, trial, doubling, jute, single cards, show, hide, blind and other minute details) GUI game on teen patti, where user can play with an AI, which is trained on data so it's supposed to be really good at making intuitions on when to play when not to.
+
+Side Projects that I'll need to learn/work on:
+    creating visually asthetic game on pygame
+    How to build an AI an train it so that it becomes really great at it.....(unlike flappy bird, it'll require a lot of things...like judgement and boldness risk factor...idk what that means in computer terms though)
+
+
+How the fuck do i add in the gameplay of blind?
+so there are things right? let's unfold them first:
+
+each person, playing can either see their cards or not.
+if player.sees:
+    give up
+    or
+    keep playing and but add double the amount(let's leave double the amount thing for now...dealing with ints shouldn't be that hard)
+
+if player.blind:
+    either show all player cards after playing
+    or
+    keep betting
+
+
+doesn't sound that hard...and am i missing something?
+
+
+
+
+
+let's do this..
+
+have a while loop for the whole of main yeah?
+instead of dammmmmm(now trial, run, color, jute and other functions seem so trivial T_T...like they just don't hold that value anymore..ofcourse they are correct and they work...but T_T)
+import time
+for player in players:
+    ask each player if they want to see or not( and add player.seen property in class as self.seen(sounds good right?))
+    if yes then:
+        player.seen = true
+        for each player: print(player)(the return f string of __str__ from class Player)
+        time.sleep(8) #let each player see their card
+        ask them if they want to quit or double their betting
+            (may be track player.quit too..and at the end of each loop, make a new loop removing players.quit = true)
+    else:
+    player.seen = false
+    ask: do u wanna show?
+    continue to the next one
+
+#damm...side show in add grna pryo ta(huna ta kei xaina..for player.seen ..if sideshow=true then, compare them..and jo harxa tele quit...)
+
+    then,
+
+    damm i'm sleepy...and my week ass brain after 2 weeks is saying I M H....fuck me....
+
+
+let's start a game:
+player:4
+#round 1
+cards are dealt
+player one: plays blindly
+player two sees: want to play more so adds double the bet 
+player three sees: want to play more..but is unsure so pays and then side shows with player two, and wins
+(player two quits)
+player 4: plays blindly
+#round 2
+player one: plays blindly (can make the whole players show and put an end to the game)
+player two: quitted in the last round
+player three: has no choice but to keep adding double the bet or just quit
+player four: keeps playing blindly
+#round 3:
+player one: sees and folds his cards
+(player one quits)
+player two: quited two rounds ago
+player three: has no choice but to keep adding double..yk what? since it's only between 2 players now...even player three has the ability to make show
+player four: keeps playing blindly
+#round four
+player one: quitted last round
+player two: quitted 3 rounds ago
+player three: keeps adding more, thinking he'll win
+player four: plays blind
+#round five
+player one: out
+player two: out
+player three: makes show..and he has 3,4,5-all are of hearts
+player four: he has 6 of spade, 8 of diamond, and 3 of spade
+(player three wins)
+
+I believe this game basically goes through all that could happen:
+forced to keep adding, folding willingly, folding after side showing(you can side show to only player with +- 1 of your number though)
+seen player makes show cuz he was one of last two, adding in blindly.
+
+so this is how it goes:
+round = 0
+
+while true:
+    fuck i'm sleepy...next 2 din ma sakkayera xadxu....ani pygame ma design garauna suru...1-2 week ma tyo ni sakkauxu ani next 2-3 week ma ai tayar parxu
+    for player in players:
+        if player.seen:
+            ask them these questions
+        else:
+            ask them these ones
+
+    round+=1
+    continue
+
+
+add in the concept of pot too
+(pot of both types: one pays for all for one match, all pay equal amount)
