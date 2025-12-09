@@ -1,3 +1,7 @@
+"""I FEEL LIKE I'M FUCKING DONE WITH MY CODE—FINALLY....PHEW...
+NOW I CAN START WORKING ON PYGAMES AND FUCK MYSELF THERE LOL.
+RUNU KI KHUSI HUNU"""
+
 from collections import Counter
 from random import *
 from time import sleep
@@ -20,8 +24,15 @@ class Player:
     }
 
     pattern = ["spade", "diamond", "love", "club"]
+    pot_value = 0
+    POT_BET = 50
+    winner = None
+    ROUND_BET_VALUE = 10
+    No_of_players = None
+    players = None
 
-    def __init__(self, name, cards=None, faces=None, colors=None, sorted_face_values=None, has_trial=None, has_run=None, has_double=None, has_color=None, has_jute=None, side_show_num = 0, has_seen=False, has_quit=False):
+
+    def __init__(self, name, cards=None, faces=None, colors=None, sorted_face_values=None, has_trial=None, has_run=None, has_double=None, has_color=None, has_jute=None, side_show_num = 0, has_seen=False, has_quit=False, treasure= 200, ):
         self.name = name
         self.cards = cards
         self.faces = faces
@@ -35,28 +46,63 @@ class Player:
         self.side_show_num = side_show_num
         self.has_seen = has_seen
         self.has_quit = has_quit
+        self.treasure = treasure
     
     def __str__(self):
         return f"Name: {self.name}, cards: {self.cards}"
+    
+    @classmethod
+    def pot_initializer(cls):
+        cls.pot_value += (cls.POT_BET * cls.No_of_players)
+        for player in cls.players:
+            player.treasure -= Player.POT_BET
+        return
+
+
+    
+    def seen_pot_adder(self):
+        self.treasure -= Player.ROUND_BET_VALUE
+        Player.pot_value += Player.ROUND_BET_VALUE
+        #print something should you feel like it
+        return
+    
+    def unseen_pot_adder(self):
+        self.treasure -= (2*Player.ROUND_BET_VALUE)
+        Player.pot_value += (2*Player.ROUND_BET_VALUE)
+        #print something should you feel like it
+        return
+
+    def win_adder(self):
+        self.treasure += Player.pot_value
+        return
 
 def main():
     global players_with_trial,players_with_double,players_with_run,players_with_color,players_with_jute,single_players, diff_players, bool_value
-    #write constant variables here if need be
     round = 0
     bool_value = {"yes": True, "no":False}
     new_players = players_maker() #player objects have been made
     players = list(new_players) #making new list, cuz i don't think i should be interfering with the original list...cuz it will get a lot messier down the line when in-game!
+    Player.players = players #kinda vague i guess...but i'll make it better!
     diff_players = diff_players_gen(players)
     diff_players = list(filter(lambda x: len(x) > 0, diff_players))
     num_players = len(players)
+    Player.No_of_players = num_players
 
-    while num_players >= 2:
+    while num_players >= 1:
+        if num_players == 1:
+            Player.winner = players[0]
+            break
         players = [player for player in players if not player.has_quit]
         num_players = len(players)
         round+=1
+        if round==1:
+            Player.pot_initializer()
+        for player in players:
+            print(player.treasure)
         print("this is round", round)
+        #print("\033c").....this works!!!!
+
         i=0
-        
         while i < num_players:
             player = players[i]
             last_player = players[i-1]
@@ -67,36 +113,37 @@ def main():
                     players.pop(i)
                     num_players-=1
                     continue
-                #if he didn't quit then this:
+                else:
+                    #if he didn't quit then he must pay double the fee:
+                    Player.unseen_pot_adder(player)
+                    print(player.treasure)
                 #time for sideshow
                 if last_player.has_seen:
                     if_side_show = side_show(player, last_player, round)
                     if not if_side_show:
                         i+=1
                         continue
-                    if player.has_quit:
-                        players.pop(i)
-                        num_players-=1
-                        '''if num_players==1:
-                            return'''
-                        break
                     else:
                         player.side_show_num = 0
-                        players.pop(i-1)
                         num_players-=1
-                        break
+                        if player.has_quit:
+                            players.pop(i)
+                        else: #last player has quit
+                            players.pop(i-1)
+                        if num_players == 1:  break
             else:
+                Player.seen_pot_adder(player)
+                print(player.treasure)
                 bool_open = open(player, players)
                 if bool_open:
                     return
                 else:
                     i+= 1 
                     continue
-                return
-
             i+=1
-        #inner loop ends here
+    print(Player.winner)
     return
+
 
 
 def error(player_name):
@@ -119,7 +166,7 @@ def players_maker():
             player.has_run, player.sorted_face_values = run(player.faces)
             player.has_color = color(player.colors)
             player.has_jute = jute(player.faces)
-            print(player)
+            #print(player)
         return players
 
 deck_main = [f"{card}: {color}" for card in Player.cards.keys() for color in Player.pattern] #need to make deck and then make a copy instead of messing with the original actual deck
@@ -139,7 +186,7 @@ def diff_players_gen(players):
     players_with_jute = [player for player in players if player.has_jute]
     single_players = players.copy()
 
-    return players_with_trial, players_with_double, players_with_run, players_with_run, players_with_color, players_with_jute, single_players
+    return players_with_trial, players_with_double, players_with_run, players_with_color, players_with_jute, single_players
 
 def trial(cards):
     faces = []
@@ -182,6 +229,7 @@ def win_generator(players):
     for players_condition in diff_players:
         if not (winner:=single_winner(players_condition)):
             continue
+        Player.winner = winner
         return winner
     return "Winner is None"
 
@@ -266,8 +314,9 @@ def quit(player, round):
 
 def side_show(player, last_player, round):
     side_show_num = 0
+    side_show = None
     while True:
-        side_show = None
+        #side_show = None
         try:
             if not side_show:
                 if (side_show := input(f"{player.name} do u wanna request a sideshow? (yes|no) ").strip().lower()) not in bool_value:
@@ -287,6 +336,10 @@ def side_show(player, last_player, round):
                 print(f"{last_player.name}, you are forced to accept this sideshow, cuz it's the third time!! ")
                 sideshow_list = [player, last_player]
                 side_show_winner = win_generator(sideshow_list)
+                if side_show_winner == "Winner is None":
+                    player.has_quit = True #the one who proposed the sideshow will quit
+                    return True
+                #if there's not a tie then do this
                 for side_shower in sideshow_list: #sideshower meaning players participated in this sideshow
                     if  side_shower != side_show_winner:
                         side_shower.has_quit = True
@@ -302,8 +355,3 @@ def side_show(player, last_player, round):
 
 if __name__ == "__main__":
     main()
-
-
-#Simley face, crying face.
-#wtf is wrong with my code?
-#sometimes it works the way i totally intend it to..sometimes.....it's a fucking mess..
